@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(gh api:*)",
+      "Bash(gh run:*)",
+      "WebSearch",
+      "WebFetch(domain:anond.hatelabo.jp)",
+      "WebFetch(domain:renwanderer.com)",
+      "WebFetch(domain:note.com)",
+      "WebFetch(domain:reijirei.com)",
+      "WebFetch(domain:nanpawars-blog.net)",
+      "Bash(cd:*)",
+      "Bash(node:*)",
+      "Bash(gh repo:*)",
+      "Bash(git remote:*)",
+      "WebFetch(domain:www.j-cast.com)"
+    ]
+  }
+}
