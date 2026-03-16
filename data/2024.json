@@ -126,5 +126,19 @@
     "image": "",
     "reach": 2,
     "peak_month": 8
+  },
+  {
+    "name": "ナンパYouTuberの時代",
+    "type": "aruaru",
+    "description": "ナンパをコンテンツ化するYouTuberが2020年代に増加。主要チャンネル: ゲンキジャパン（登録者45万人、累計1万人に声かけ、GACKTと対談）、杉崎PUA（TikTok約10万、落とし物ナンパ）、なめだるまジャン（強制わいせつで逮捕歴あり）、低身長ナンパ師ゆってぃ（2024年チャンネル削除）等。",
+    "origin": "YouTube / TikTok。2024年にゆってぃの問題が報道され社会問題化。ゲンキは2025年4月に「コンプラ的に厳しい」として英国移住を発表（NEWSポストセブン）。",
+    "image": "",
+    "reach": 3,
+    "peak_month": 10,
+    "sources": [
+      {"type": "news", "url": "https://www.news-postseven.com/archives/20250419_2036185.html", "title": "ナンパYouTuberゲンキが語るコンプラ時代の「ナンパの流儀」英国移住を発表"},
+      {"type": "news", "url": "https://natalie.mu/music/news/553364", "title": "GACKTがナンパ系YouTube「ゲンキジャパン」でナンパ師と対談 - 音楽ナタリー"},
+      {"type": "news", "url": "https://memomalog.com/namedarumajan-nanimono/", "title": "なめだるまジャンは何者？高学歴ナンパ師で逮捕歴あり"}
+    ]
   }
 ]
