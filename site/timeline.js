@@ -47,9 +47,9 @@
       html += `<div class="tl-year-bars">`;
 
       sorted.forEach((meme) => {
-        const buzz = meme.buzz || 5;
+        const buzz = meme.reach || meme.buzz || 5;
         const month = meme.peak_month || 1;
-        const width = buzz * 10;
+        const width = buzz * 20;
         const hue = buzzToHue(buzz);
 
         html += `<div class="tl-bar-row">`;
@@ -79,7 +79,7 @@
       for (let m = 1; m <= 12; m++) grid[y][m] = [];
       (allData[y] || []).forEach((meme) => {
         const m = meme.peak_month || 1;
-        grid[y][m].push({ name: meme.name, buzz: meme.buzz || 5 });
+        grid[y][m].push({ name: meme.name, buzz: meme.reach || meme.buzz || 5 });
       });
     });
 
@@ -96,11 +96,11 @@
       html += `<div class="hm-year-header"><a href="year.html?y=${year}">${year}</a></div>`;
       for (let m = 1; m <= 12; m++) {
         const items = grid[year][m];
-        const maxBuzz = items.length ? Math.max(...items.map((i) => i.buzz)) : 0;
+        const maxBuzz = items.length ? Math.max(...items.map((i) => i.reach || i.buzz)) : 0;
         const count = items.length;
         const hue = maxBuzz ? buzzToHue(maxBuzz) : 0;
-        const opacity = maxBuzz ? 0.15 + (maxBuzz / 10) * 0.85 : 0.05;
-        const tooltip = items.map((i) => `${i.name} (${i.buzz})`).join("\n");
+        const opacity = maxBuzz ? 0.15 + (maxBuzz / 5) * 0.85 : 0.05;
+        const tooltip = items.map((i) => `${i.name} (${i.reach || i.buzz})`).join("\n");
 
         html += `<div class="hm-cell" style="background:hsla(${hue},75%,55%,${opacity})" title="${escapeHtml(tooltip)}">`;
         if (count > 0) {
@@ -114,8 +114,8 @@
 
     // Legend
     html += `<div class="hm-legend">`;
-    html += `<span class="hm-legend-label">バズ度:</span>`;
-    for (let b = 1; b <= 10; b++) {
+    html += `<span class="hm-legend-label">到達度:</span>`;
+    for (let b = 1; b <= 5; b++) {
       const hue = buzzToHue(b);
       html += `<div class="hm-legend-cell" style="background:hsl(${hue},75%,55%)" title="${b}">${b}</div>`;
     }
@@ -124,10 +124,9 @@
     container.innerHTML = html;
   }
 
-  // Buzz 1-10 -> hue (blue to red)
-  function buzzToHue(buzz) {
-    // 1=blue(210), 10=red/pink(340)
-    return 210 + ((buzz - 1) / 9) * 130;
+  // Reach 1-5 -> hue (blue to pink)
+  function buzzToHue(reach) {
+    return 210 + ((reach - 1) / 4) * 130;
   }
 
   function escapeHtml(str) {

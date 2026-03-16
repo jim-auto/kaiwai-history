@@ -3,71 +3,38 @@
 
   const YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
-  // --- Index page: render year grid with meme counts + pickup ---
-  const yearGrid = document.getElementById("year-grid");
-  if (yearGrid) {
-    let totalMemes = 0;
-    let loaded = 0;
-    const allMemes = [];
-
+  // --- Index page: render year list with top memes ---
+  const yearList = document.getElementById("year-list");
+  if (yearList) {
     YEARS.forEach((year) => {
-      const a = document.createElement("a");
-      a.href = `year.html?y=${year}`;
-      a.className = "year-card";
-      a.innerHTML = `
-        <span class="year-card-year">${year}</span>
-        <span class="year-card-count" id="count-${year}">...</span>
+      const row = document.createElement("a");
+      row.href = `year.html?y=${year}`;
+      row.className = "year-row";
+      row.innerHTML = `
+        <span class="year-row-year">${year}</span>
+        <span class="year-row-tags" id="tags-${year}"></span>
+        <span class="year-row-count" id="count-${year}"></span>
+        <span class="year-row-arrow">&rsaquo;</span>
       `;
-      yearGrid.appendChild(a);
+      yearList.appendChild(row);
 
-      // Fetch count
       fetch(`../data/${year}.json`)
         .then((res) => res.ok ? res.json() : [])
         .then((memes) => {
-          const count = memes.length;
-          totalMemes += count;
-          memes.forEach((m) => allMemes.push({ ...m, year }));
-          const el = document.getElementById(`count-${year}`);
-          if (el) el.textContent = `${count} memes`;
-        })
-        .catch(() => {
-          const el = document.getElementById(`count-${year}`);
-          if (el) el.textContent = "0 memes";
-        })
-        .finally(() => {
-          loaded++;
-          if (loaded === YEARS.length) {
-            const stats = document.getElementById("stats");
-            if (stats) {
-              stats.innerHTML = `<span>${YEARS.length} years</span><span class="stats-dot"></span><span>${totalMemes} memes</span>`;
-            }
-            renderPickup(allMemes);
+          const countEl = document.getElementById(`count-${year}`);
+          if (countEl) countEl.textContent = `${memes.length}`;
+
+          const tagsEl = document.getElementById(`tags-${year}`);
+          if (tagsEl && memes.length) {
+            const topMemes = [...memes]
+              .sort((a, b) => (b.reach || b.buzz || 0) - (a.reach || a.buzz || 0))
+              .slice(0, 3);
+            tagsEl.innerHTML = topMemes
+              .map((m) => `<span class="year-row-tag">${escapeHtml(m.name)}</span>`)
+              .join("");
           }
-        });
-    });
-  }
-
-  function renderPickup(allMemes) {
-    const container = document.getElementById("pickup-scroll");
-    if (!container) return;
-
-    const top = [...allMemes].sort((a, b) => (b.buzz || 0) - (a.buzz || 0)).slice(0, 12);
-
-    top.forEach((meme) => {
-      const buzz = meme.buzz || 5;
-      const hue = buzzToHue(buzz);
-      const a = document.createElement("a");
-      a.href = `year.html?y=${meme.year}`;
-      a.className = "pickup-card";
-      a.innerHTML = `
-        <span class="pickup-card-year">${meme.year}</span>
-        <span class="pickup-card-name">${escapeHtml(meme.name)}</span>
-        <div class="pickup-card-buzz">
-          <div class="pickup-card-buzz-track"><div class="pickup-card-buzz-fill" style="width:${buzz * 10}%;background:hsl(${hue},75%,55%)"></div></div>
-          <span class="pickup-card-buzz-val">${buzz}</span>
-        </div>
-      `;
-      container.appendChild(a);
+        })
+        .catch(() => {});
     });
   }
 
@@ -151,8 +118,9 @@
 
   const MONTHS = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
 
-  function buzzToHue(buzz) {
-    return 210 + ((buzz - 1) / 9) * 130;
+  function buzzToHue(reach) {
+    // 1=blue(210), 5=pink(340)
+    return 210 + ((reach - 1) / 4) * 130;
   }
 
   function createMemeCard(meme, rank) {
@@ -163,14 +131,15 @@
     html += `<div class="meme-name">${escapeHtml(meme.name)}</div>`;
 
     // Buzz meter + peak month
-    if (meme.buzz) {
-      const buzz = meme.buzz;
-      const hue = buzzToHue(buzz);
+    if (meme.reach || meme.buzz) {
+      const reach = meme.reach || meme.buzz;
+      const REACH_LABELS = ["", "界隈の一部", "界隈内で認知", "界隈外に波及", "SNS全体バズ", "社会現象"];
+      const hue = buzzToHue(reach);
       const peakLabel = meme.peak_month ? MONTHS[meme.peak_month - 1] + "ピーク" : "";
       html += `<div class="meme-buzz">`;
-      html += `  <span class="meme-buzz-label">バズ度</span>`;
-      html += `  <div class="meme-buzz-track"><div class="meme-buzz-fill" style="width:${buzz * 10}%;background:hsl(${hue},75%,55%)"></div></div>`;
-      html += `  <span class="meme-buzz-value">${buzz}</span>`;
+      html += `  <span class="meme-buzz-label">${REACH_LABELS[reach] || ""}</span>`;
+      html += `  <div class="meme-buzz-track"><div class="meme-buzz-fill" style="width:${reach * 20}%;background:hsl(${hue},75%,55%)"></div></div>`;
+      html += `  <span class="meme-buzz-value">${reach}/5</span>`;
       html += `</div>`;
       if (peakLabel) {
         html += `<div class="meme-peak">${peakLabel}</div>`;
