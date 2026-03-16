@@ -3,15 +3,44 @@
 
   const YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
-  // --- Index page: render year grid ---
+  // --- Index page: render year grid with meme counts ---
   const yearGrid = document.getElementById("year-grid");
   if (yearGrid) {
+    let totalMemes = 0;
+    let loaded = 0;
+
     YEARS.forEach((year) => {
       const a = document.createElement("a");
       a.href = `year.html?y=${year}`;
       a.className = "year-card";
-      a.textContent = year;
+      a.innerHTML = `
+        <span class="year-card-year">${year}</span>
+        <span class="year-card-count" id="count-${year}">...</span>
+      `;
       yearGrid.appendChild(a);
+
+      // Fetch count
+      fetch(`../data/${year}.json`)
+        .then((res) => res.ok ? res.json() : [])
+        .then((memes) => {
+          const count = memes.length;
+          totalMemes += count;
+          const el = document.getElementById(`count-${year}`);
+          if (el) el.textContent = `${count} memes`;
+        })
+        .catch(() => {
+          const el = document.getElementById(`count-${year}`);
+          if (el) el.textContent = "0 memes";
+        })
+        .finally(() => {
+          loaded++;
+          if (loaded === YEARS.length) {
+            const stats = document.getElementById("stats");
+            if (stats) {
+              stats.innerHTML = `<span>${YEARS.length} years</span><span class="stats-dot"></span><span>${totalMemes} memes</span>`;
+            }
+          }
+        });
     });
   }
 
@@ -29,7 +58,11 @@
     }
 
     document.title = `${year} - PUA Meme History`;
-    yearTitle.textContent = `${year}年のミーム`;
+    yearTitle.textContent = `${year}`;
+
+    // Build prev/next navigation
+    const yearIndex = YEARS.indexOf(parseInt(year));
+    buildPager(yearIndex);
 
     fetch(`../data/${year}.json`)
       .then((res) => {
@@ -41,13 +74,44 @@
           showEmpty();
           return;
         }
+        // Show count
+        const countEl = document.getElementById("meme-count");
+        if (countEl) countEl.textContent = `${memes.length} memes`;
+
         memes.forEach((meme, i) => {
           memeList.appendChild(createMemeCard(meme, i + 1));
+        });
+
+        // Animate cards
+        requestAnimationFrame(() => {
+          document.querySelectorAll(".meme-card").forEach((card, i) => {
+            card.style.animationDelay = `${i * 0.06}s`;
+          });
         });
       })
       .catch(() => {
         showEmpty();
       });
+  }
+
+  function buildPager(yearIndex) {
+    const pager = document.getElementById("year-pager");
+    if (!pager) return;
+
+    let html = "";
+    if (yearIndex < YEARS.length - 1) {
+      const prev = YEARS[yearIndex + 1];
+      html += `<a href="year.html?y=${prev}" class="pager-link">&larr; ${prev}</a>`;
+    } else {
+      html += `<span></span>`;
+    }
+    if (yearIndex > 0) {
+      const next = YEARS[yearIndex - 1];
+      html += `<a href="year.html?y=${next}" class="pager-link">${next} &rarr;</a>`;
+    } else {
+      html += `<span></span>`;
+    }
+    pager.innerHTML = html;
   }
 
   function showEmpty() {
@@ -60,7 +124,7 @@
 
   function createMemeCard(meme, rank) {
     const card = document.createElement("div");
-    card.className = "meme-card";
+    card.className = "meme-card fade-in";
 
     let html = `<div class="meme-rank">#${rank}</div>`;
     html += `<div class="meme-name">${escapeHtml(meme.name)}</div>`;
