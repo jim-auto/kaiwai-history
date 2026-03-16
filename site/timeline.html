@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline - PUA Meme History</title>
+  <meta name="description" content="PUA / ナンパ / マッチングアプリ界隈のミームをタイムラインで可視化">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="site-header-link">
+      <h1>PUA Meme History</h1>
+    </a>
+    <p>ミームの流行をタイムラインで可視化</p>
+  </header>
+
+  <main class="container container-wide">
+    <nav class="year-nav">
+      <a href="index.html" class="back-link">&larr; トップに戻る</a>
+    </nav>
+
+    <h2 class="year-title">Timeline</h2>
+    <p class="timeline-desc">バー幅 = バズ度（1〜10）/ 位置 = ピーク月</p>
+
+    <div class="timeline-controls">
+      <button class="tl-btn active" data-view="chart">チャート</button>
+      <button class="tl-btn" data-view="heatmap">ヒートマップ</button>
+    </div>
+
+    <!-- Chart view -->
+    <div class="timeline-view" id="chart-view">
+      <div id="timeline-chart"></div>
+    </div>
+
+    <!-- Heatmap view -->
+    <div class="timeline-view hidden" id="heatmap-view">
+      <div id="timeline-heatmap"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    &copy; PUA Meme History
+  </footer>
+
+  <script src="timeline.js"></script>
+</body>
+</html>

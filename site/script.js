@@ -122,12 +122,33 @@
     }
   }
 
+  const MONTHS = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+
+  function buzzToHue(buzz) {
+    return 210 + ((buzz - 1) / 9) * 130;
+  }
+
   function createMemeCard(meme, rank) {
     const card = document.createElement("div");
     card.className = "meme-card fade-in";
 
     let html = `<div class="meme-rank">#${rank}</div>`;
     html += `<div class="meme-name">${escapeHtml(meme.name)}</div>`;
+
+    // Buzz meter + peak month
+    if (meme.buzz) {
+      const buzz = meme.buzz;
+      const hue = buzzToHue(buzz);
+      const peakLabel = meme.peak_month ? MONTHS[meme.peak_month - 1] + "ピーク" : "";
+      html += `<div class="meme-buzz">`;
+      html += `  <span class="meme-buzz-label">バズ度</span>`;
+      html += `  <div class="meme-buzz-track"><div class="meme-buzz-fill" style="width:${buzz * 10}%;background:hsl(${hue},75%,55%)"></div></div>`;
+      html += `  <span class="meme-buzz-value">${buzz}</span>`;
+      html += `</div>`;
+      if (peakLabel) {
+        html += `<div class="meme-peak">${peakLabel}</div>`;
+      }
+    }
 
     if (meme.description) {
       html += `<div class="meme-description">${escapeHtml(meme.description)}</div>`;
